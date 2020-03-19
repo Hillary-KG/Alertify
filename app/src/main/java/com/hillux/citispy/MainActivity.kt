@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // The action bar home/up action should open or close the drawer.
-        when (item.getItemId()) {
+        when (item.itemId) {
             android.R.id.home -> {
                 mDrawer!!.openDrawer(GravityCompat.START)
                 return true

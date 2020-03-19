@@ -4,6 +4,7 @@ import android.app.ListActivity
 import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 
 class SearchUserActivity: ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,6 +17,12 @@ class SearchUserActivity: ListActivity() {
                 doMySearch(query)
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        return true
     }
 
     fun doMySearch(query:String){

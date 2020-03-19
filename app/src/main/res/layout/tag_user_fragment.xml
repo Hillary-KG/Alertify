@@ -6,5 +6,6 @@
     <SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary"
+        android:queryHint="Search user"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
