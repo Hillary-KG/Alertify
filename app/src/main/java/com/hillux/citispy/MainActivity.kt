@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -31,7 +32,8 @@ class MainActivity : AppCompatActivity() {
 
     private var mDrawer: DrawerLayout? = null
     private var toolbar: Toolbar? = null
-    private var nvDrawer: NavigationView? = null
+    private var navDrawer: NavigationView? = null
+    private var toggle: ActionBarDrawerToggle? = null
 
 
     val firebaseAuth = FirebaseAuth.getInstance()
@@ -45,16 +47,18 @@ class MainActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar)
         // This will display an Up icon (<-), we will replace it with hamburger later
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+//        supportActionBar?.setDefaultDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Find our drawer view
-        mDrawer = findViewById<DrawerLayout>(R.id.drawer_layout);
+        mDrawer = findViewById<DrawerLayout>(R.id.drawer_layout)
 
-        nvDrawer = findViewById<NavigationView>(R.id.navView);
+        navDrawer = findViewById<NavigationView>(R.id.navView)
+
+        toggle = new ActionBarDrawerToggle(this, mDrawer)
         // Setup drawer view
-        setupDrawerContent(nvDrawer!!);
+        setupDrawerContent(navDrawer!!);
 
-        // Lookup navigation view
         // Lookup navigation view
         val navigationView =
             findViewById<View>(R.id.navView) as NavigationView
@@ -89,9 +93,10 @@ class MainActivity : AppCompatActivity() {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         var fragment: Fragment? = null
         val fragmentClass: Class<*> = when (menuItem.itemId) {
-            R.id.main_fragment -> RaiseAlarm::class.java
-            R.id.tag_person_fragment -> TagUser::class.java
-            R.id.edit_profile_fragment -> EditProfile::class.java
+            R.id.action_go_home -> RaiseAlarm::class.java
+            R.id.action_raise_alert -> RaiseAlarm::class.java
+            R.id.action_tag_contact -> SearchUserActivity::class.java
+            R.id.action_edit_profile -> EditProfile::class.java
             else -> RaiseAlarm::class.java
         }
         try {

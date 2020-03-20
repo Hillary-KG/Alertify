@@ -38,4 +38,5 @@
     <string name="raise_alert">Raise Alert</string>
     <string name="tad_admin">Alert Admin</string>
     <string name="search_hint">Search user by name ...</string>
+    <string name="go_home">Home</string>
 </resources>

@@ -8,6 +8,11 @@ import kotlinx.android.synthetic.main.toolbar.view.*
 
 class RaiseAlarm: Fragment() {
 
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.raise_alarm_fragment)
+//    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment with the RaiseAlarm theme
@@ -18,12 +23,12 @@ class RaiseAlarm: Fragment() {
 
         return view;
     }
-
-    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        super.onCreateOptionsMenu(
-            menu,
-            menuInflater
-        )
-    }
+//
+//    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+//        menuInflater.inflate(R.menu.main_menu, menu)
+//        super.onCreateOptionsMenu(
+//            menu,
+//            menuInflater
+//        )
+//    }
 }
