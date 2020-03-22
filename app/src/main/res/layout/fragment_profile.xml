@@ -1,14 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".ProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/img_round"
+        android:contentDescription="@string/profile_pic_desc"
+        android:id="@+id/profile_icon"
+        android:backgroundTint="@color/design_default_color_secondary"
+        android:layout_gravity="center"/>
 
-</FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="10dp"
+        android:layout_gravity="center"
+        android:background="#DCEDEC"
+        android:padding="20dp"
+        android:layout_marginTop="20dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/names">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/first_name_hint"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/widget_edittext_dark"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/last_name_hint"
+                android:inputType="textPersonName"
+                android:layout_weight="1"
+                android:textColor="@android:color/widget_edittext_dark"
+                />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_phone_no"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phone_hint"
+            android:inputType="phone"
+            android:padding="16dp"
+            android:layout_below="@+id/names"
+            android:textColor="@android:color/widget_edittext_dark"/>
+    </RelativeLayout>
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="@string/save_profile"
+        android:textSize="25sp"
+        android:layout_margin="20dp"
+        android:id="@+id/save_profile"
+        android:layout_gravity="end"
+        android:textAllCaps="false"
+
+        />
+
+
+</LinearLayout>

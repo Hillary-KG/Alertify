@@ -20,16 +20,16 @@
         android:layout_margin="50dp"/>
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_user"
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/round_search"
-        app:queryHint="@string/search_hint"
+        android:queryHint="Search user by name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginHorizontal="10dp"
         android:paddingHorizontal="10dp"
-        app:iconifiedByDefault="false"
-        android:maxWidth="0dp"
-        app:queryBackground="@null"
+        android:outlineAmbientShadowColor="@color/common_google_signin_btn_text_light"
         />
 </LinearLayout>

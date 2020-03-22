@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     //fragments declarations
     lateinit var homeFragment: HomeFragment
-    lateinit var alertFragment: AlertFragment
+//    lateinit var alertFragment: AlertFragment
     lateinit var tagUserFragment: TagUserFragment
     lateinit var profileFragment: ProfileFragment
 
@@ -90,14 +90,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit()
             }
-            R.id.action_raise_alert -> {
-                alertFragment = AlertFragment() //fragment code
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.frame_layout, alertFragment)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .commit()
-            }
+//            R.id.action_raise_alert -> {
+//                alertFragment = AlertFragment() //fragment code
+//                supportFragmentManager
+//                    .beginTransaction()
+//                    .replace(R.id.frame_layout, alertFragment)
+//                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                    .commit()
+//            }
             R.id.action_edit_profile -> {
                 profileFragment = ProfileFragment() //fragment code
                 supportFragmentManager
