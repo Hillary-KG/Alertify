@@ -188,15 +188,9 @@
     tools:openDrawer="start"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:id="@+id/drawer_layout"
-    tools:context=".MainActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    android:id="@+id/drawer_layout">
         <include
-            layout="@layout/toolbar"
+            layout="@layout/content_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -321,7 +315,6 @@
 <!--                android:textColor="@android:color/widget_edittext_dark"-->
 <!--                android:autofillHints=""/>-->
 <!--        </FrameLayout>-->
-    </LinearLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
         android:layout_width="wrap_content"
