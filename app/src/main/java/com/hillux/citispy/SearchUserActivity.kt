@@ -2,9 +2,11 @@ package com.hillux.citispy
 
 import android.app.ListActivity
 import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.widget.SearchView
 
 class SearchUserActivity: ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +24,11 @@ class SearchUserActivity: ListActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
 
+        // Associate searchable configuration with the SearchView
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.action_tag_contact).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
         return true
     }
 

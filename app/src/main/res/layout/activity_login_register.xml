@@ -102,6 +102,14 @@
                 android:textColor="@android:color/widget_edittext_dark" />
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/authButtons"
             android:layout_width="match_parent"
@@ -121,7 +129,7 @@
                 android:layout_weight="1"
                 android:text="@string/register_btn"
                 android:backgroundTint="@color/design_default_color_secondary"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@android:color/white" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonVerifyPhone"
@@ -144,14 +152,6 @@
                 android:text="@string/resend_btn"
                 android:backgroundTint="@color/design_default_color_secondary"
                 android:textColor="@android:color/white" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

@@ -2,7 +2,9 @@ package com.hillux.citispy
 
 //import android.R
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
@@ -18,6 +20,15 @@ import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.auth.User
+import com.hillux.citispy.User as DBUser
+
+import kotlinx.android.synthetic.main.nav_header.u_identity
+import kotlinx.android.synthetic.main.nav_header.u_name
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -27,9 +38,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var progressBar: ProgressBar? = null
 
+    private lateinit var database: FirebaseDatabase
+
     private var authListener: FirebaseAuth.AuthStateListener? = null
     private var auth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
+
 
     lateinit var mDrawer: DrawerLayout
     lateinit var toolbar: Toolbar
@@ -42,14 +56,56 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var tagUserFragment: TagUserFragment
     lateinit var profileFragment: ProfileFragment
 
+//    lateinit var usersRef
+
 
     val firebaseAuth = FirebaseAuth.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+//        firebaseAuth!!.addAuthStateListener (this.authStateListener)
         auth = FirebaseAuth.getInstance()
         user = FirebaseAuth.getInstance().currentUser
+
+        database = FirebaseDatabase.getInstance()
+        if (user == null){
+//            Log.d("null null null", "NULL")
+            val intent = Intent(this, LoginRegisterActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        if(user != null){
+            var usersRef = database.getReference("users").child(user!!.uid)
+//        Log.d("user details one", user!!.uid)
+            val userListener = object : ValueEventListener{
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val u = dataSnapshot.getValue(DBUser::class.java)
+//                Log.d("user details ", u!!.first_name)
+//                for (d in dataSnapshot.children){
+                    u_identity!!.text = u!!.phone_number.toString()
+                    u_name!!.text = u!!.first_name.toString() + " " + u!!.last_name.toString()
+//                    Log.d("user details ", d.toString())
+//                }
+//                dbUser = dataSnapshot.getValue() as User
+//                Log.d("user first name", usersRef.child("first_name").toString())
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("LoadUser:onCancelled", databaseError.toException())
+                }
+            }
+            usersRef!!.addValueEventListener(userListener)
+        }
+
+//        var user_details = usersRef.child()
+//        var user_details = usersRef.orderByChild("phone_number").equalTo(user!!.phoneNumber)
+//        Log.d("user dits", user_details.toString())
+
+//        u_identity!!.text = usersRef.child("phone_number").toString()
+//        u_name!!.text = usersRef.child("first_name").toString()
+
+
+
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar)
@@ -196,20 +252,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        mDrawer!!.closeDrawers()
 //    }
 
-//    override fun onStart() {
-//        super.onStart()
-//        firebaseAuth!!.addAuthStateListener (this.authStateListener);
-//    }
+    override fun onStart() {
+        super.onStart()
+        firebaseAuth!!.addAuthStateListener (this.authStateListener)
+    }
     val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         val currentUser = firebaseAuth.currentUser
 
         if (currentUser == null) {
-            startActivity(Intent(this, LoginRegisterActivity::class.java))
+            val intent = Intent(this, LoginRegisterActivity::class.java)
+            startActivity(intent)
             finish()
         }
     }
 
     private fun raiseAlarm(user: FirebaseUser){
+
 
     }
     private fun tagUser(user: FirebaseUser){

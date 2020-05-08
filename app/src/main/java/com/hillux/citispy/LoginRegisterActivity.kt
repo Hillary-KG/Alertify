@@ -17,6 +17,7 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.activity_login_register.buttonResend
@@ -31,11 +32,16 @@ import kotlinx.android.synthetic.main.activity_login_register.fieldVerificationC
 import kotlinx.android.synthetic.main.activity_login_register.authButtons
 import kotlinx.android.synthetic.main.activity_login_register.phoneAuthFields
 
-
+@IgnoreExtraProperties
+data class User(
+    var first_name:String = "",
+    var last_name:String = "",
+    var phone_number:String = ""
+)
 class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     // [START declare_auth]
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
+    private lateinit var database: FirebaseDatabase
     // [END declare_auth]
 
 //    private var inputFirstName: EditText? = null
@@ -80,7 +86,7 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
 
         // [START initialize_database]
         // Initialize Firebase DB
-        database = FirebaseDatabase.getInstance().reference
+        database = FirebaseDatabase.getInstance()
         // [END initialize_auth]
 
 
@@ -163,12 +169,22 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
         val currentUser = auth.currentUser
         updateUI(currentUser)
 
+//        auth!!.addAuthStateListener (this.authStateListener)
         // [START_EXCLUDE]
         if (verificationInProgress && validatePhoneNumber()) {
             startPhoneNumberVerification(inputPhoneNumber!!.text.toString())
         }
         // [END_EXCLUDE]
     }
+//    val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+//        val currentUser = firebaseAuth.currentUser
+//
+//        if (currentUser == null) {
+//            val intent = Intent(this, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+//    }
     // [END on_start_check_user]
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -181,16 +197,22 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
         verificationInProgress = savedInstanceState.getBoolean(KEY_VERIFY_IN_PROGRESS)
     }
 
+
     private fun saveUser(user: FirebaseUser?){
-        if (user != null){
-            var userDetails: Map<String, String> = mapOf(
-                "first_name" to inputFirstName!!.toString(),
-                "last_name" to inputLastName!!.toString(),
-//                "email_address" to inputEmail!!.toString(),
-                "phone_number" to inputPhoneNumber!!.toString()
-                )
-            database.child("users").child(user.uid).setValue(userDetails)
-        }
+//        val myUser = User(user!!.uid)
+        val usersRef = database.getReference("users")
+
+        var userData = User(inputFirstName!!.text.toString(), inputLastName!!.text.toString(),
+                            inputPhoneNumber!!.text.toString())
+
+//        var userDetails: Map<String, String> = mapOf(
+//            "first_name" to inputFirstName!!.text.toString(),
+//            "last_name" to inputLastName!!.text.toString(),
+////                "email_address" to inputEmail!!.toString(),
+//            "phone_number" to inputPhoneNumber!!.text.toString()
+//            )
+        usersRef.child(user!!.uid).setValue(userData)
+//            database.child("users").child(user.uid).push().setValue(userDetails)
     }
     private fun startPhoneNumberVerification(phoneNumber: String) {
         // [START start_phone_auth]
@@ -442,6 +464,30 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     }
 
 }
+
+//    fun setFirstName(first_name: String){
+//        this.first_name = first_name
+//    }
+//
+//    fun setLastName(last_name: String){
+//        this.last_name = last_name
+//    }
+//
+//    fun setPhone(phone_number: String){
+//        this.phone_number = phone_number
+//    }
+//
+//    fun getFName():String{
+//        return this.first_name
+//    }
+//
+//    fun getLName():String{
+//        return this.last_name
+//    }
+//
+//    fun getPhone():String{
+//        return this.phone_number
+//    }
 
 
 

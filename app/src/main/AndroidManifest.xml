@@ -3,6 +3,8 @@
     package="com.hillux.citispy" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -17,13 +19,17 @@
 <!--            android:theme="@style/Theme.Alertify.NoActionBar" >-->
 <!--        </activity>-->
         <activity android:name=".LoginRegisterActivity" />
-        <activity android:name=".MainActivity" >
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+        
 
         <activity android:name=".SearchUserActivity"
             android:launchMode="singleTop">
@@ -31,8 +37,8 @@
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
             <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"
-                android:value=".SearchUserActivity"/>
+                android:resource="@xml/searchable"/>
+
         </activity>
     </application>
 

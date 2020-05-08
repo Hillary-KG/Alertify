@@ -13,7 +13,7 @@
     <string name="first_name_hint">First Name</string>
     <string name="last_name_hint">Last Name</string>
     <!--    <string name="email_hint">Your Email</string>-->
-    <string name="phone_hint">Phone No. (in the format +254712345678)</string>
+    <string name="phone_hint">Phone No. (e.g +254712345678)</string>
     <string name="register_btn">Sign Up</string>
     <string name="verify_button">Verify</string>
     <string name="resend_btn">Resend</string>
