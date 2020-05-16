@@ -1,22 +1,28 @@
 package com.hillux.citispy
 
 //import android.R
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -25,7 +31,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.auth.User
-import com.hillux.citispy.User as DBUser
+import com.google.firebase.iid.FirebaseInstanceId
+import com.hillux.citispy.databinding.ActivityMainBinding
+import com.hillux.citispy.models.UserModel as DBUser
 
 import kotlinx.android.synthetic.main.nav_header.u_identity
 import kotlinx.android.synthetic.main.nav_header.u_name
@@ -63,11 +71,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //data biding
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+//            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 //        firebaseAuth!!.addAuthStateListener (this.authStateListener)
         auth = FirebaseAuth.getInstance()
         user = FirebaseAuth.getInstance().currentUser
-
         database = FirebaseDatabase.getInstance()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelId = getString(R.string.default_notification_channel_id)
+            val channelName = getString(R.string.default_notification_channel_name)
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(
+                NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_LOW)
+            )
+        }
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        intent.extras?.let {
+            for (key in it.keySet()) {
+                val value = intent.extras?.get(key)
+                Log.d(TAG, "Key: $key Value: $value")
+            }
+        }
+        // [END handle_data_extras]
+
         if (user == null){
 //            Log.d("null null null", "NULL")
             val intent = Intent(this, LoginRegisterActivity::class.java)
@@ -76,18 +108,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         if(user != null){
             var usersRef = database.getReference("users").child(user!!.uid)
-//        Log.d("user details one", user!!.uid)
+//            Log.d("user details one", user!!.uid)
             val userListener = object : ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val u = dataSnapshot.getValue(DBUser::class.java)
-//                Log.d("user details ", u!!.first_name)
-//                for (d in dataSnapshot.children){
-                    u_identity!!.text = u!!.phone_number.toString()
-                    u_name!!.text = u!!.first_name.toString() + " " + u!!.last_name.toString()
-//                    Log.d("user details ", d.toString())
-//                }
-//                dbUser = dataSnapshot.getValue() as User
-//                Log.d("user first name", usersRef.child("first_name").toString())
+                    if (dataSnapshot.exists()){
+                        val u = dataSnapshot.getValue(DBUser::class.java)
+                        u_identity!!.text = u!!.phone_number.toString()
+                        u_name!!.text = u!!.first_name.toString() + " " + u!!.last_name.toString()
+                    }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -272,6 +300,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     private fun tagUser(user: FirebaseUser){
 
+    }
+    companion object {
+
+        private const val TAG = "MainActivity"
     }
 }
 

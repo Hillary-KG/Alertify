@@ -22,6 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    dataBinding{
+        enabled true
+    }
 // To inline the bytecode built with JVM target 1.8 into
 // bytecode that is being built with JVM target 1.6. (e.g. navArgs)
 
@@ -36,6 +40,25 @@ android {
 }
 
 dependencies {
+    def work_version = "2.3.4"
+
+    implementation 'com.android.volley:volley:1.1.1'
+
+    // (Java only)
+    implementation "androidx.work:work-runtime:$work_version"
+
+    // Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    // optional - RxJava2 support
+    implementation "androidx.work:work-rxjava2:$work_version"
+
+    // optional - GCMNetworkManager support
+    implementation "androidx.work:work-gcm:$work_version"
+
+    // optional - Test helpers
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+
     api 'com.google.android.material:material:1.2.0-alpha06'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -75,4 +98,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
 
     implementation "com.android.support:support-core-utils:28.0.0"
+
+    // Card View
+    implementation "androidx.cardview:cardview:1.0.0"
+
+    // Recyclerview
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 }

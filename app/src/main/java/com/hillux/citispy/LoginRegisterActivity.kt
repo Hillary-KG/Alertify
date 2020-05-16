@@ -15,10 +15,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.hillux.citispy.models.UserModel
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.activity_login_register.buttonResend
 import kotlinx.android.synthetic.main.activity_login_register.buttonStartVerification
@@ -31,13 +30,17 @@ import kotlinx.android.synthetic.main.activity_login_register.inputPhoneNumber
 import kotlinx.android.synthetic.main.activity_login_register.fieldVerificationCode
 import kotlinx.android.synthetic.main.activity_login_register.authButtons
 import kotlinx.android.synthetic.main.activity_login_register.phoneAuthFields
+import kotlinx.android.synthetic.main.nav_header.*
+import java.util.*
 
-@IgnoreExtraProperties
-data class User(
-    var first_name:String = "",
-    var last_name:String = "",
-    var phone_number:String = ""
-)
+
+//data class User(
+//    var first_name:String = "",
+//    var last_name:String = "",
+//    var phone_number:String = "",
+//    var userTopic:String = "",
+//    var taggedUsers: List<String> = listOf()
+//)
 class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     // [START declare_auth]
     private lateinit var auth: FirebaseAuth
@@ -166,7 +169,7 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
+        val currentUser = auth!!.currentUser
         updateUI(currentUser)
 
 //        auth!!.addAuthStateListener (this.authStateListener)
@@ -201,9 +204,10 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     private fun saveUser(user: FirebaseUser?){
 //        val myUser = User(user!!.uid)
         val usersRef = database.getReference("users")
+        val userTopic:String = UUID.randomUUID().toString().substring(0, 10)
 
-        var userData = User(inputFirstName!!.text.toString(), inputLastName!!.text.toString(),
-                            inputPhoneNumber!!.text.toString())
+        var userData = UserModel(inputFirstName!!.text.toString(), inputLastName!!.text.toString(),
+                            inputPhoneNumber!!.text.toString(), userTopic)
 
 //        var userDetails: Map<String, String> = mapOf(
 //            "first_name" to inputFirstName!!.text.toString(),
@@ -309,11 +313,33 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-        if (user != null) {
-            updateUI(STATE_SIGNIN_SUCCESS, user)
-        } else {
+        if (user != null){
+            var usersRef = database.getReference("users").child(user!!.uid)
+            Log.d("user details one", user!!.uid)
+            val userListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        updateUI(STATE_SIGNIN_SUCCESS, user)
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("LoadUser:onCancelled", databaseError.toException())
+                }
+            }
+            usersRef!!.addValueEventListener(userListener)
+        }else {
+            auth.signOut()
             updateUI(STATE_INITIALIZED)
         }
+
+//        if (user != null) {
+//            Log.d("user not null", "USER")
+//            updateUI(STATE_SIGNIN_SUCCESS, user)
+//
+//        } else {
+//            updateUI(STATE_INITIALIZED)
+//        }
     }
 
     private fun updateUI(uiState: Int, cred: PhoneAuthCredential) {
