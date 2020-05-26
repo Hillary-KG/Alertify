@@ -44,16 +44,16 @@ class ProfileFragment : Fragment() {
 
             if(this.updateUser()){
                 val HomeFragment = HomeFragment()
-                val FragmentTransaction = fragmentManager!!.beginTransaction()
+                val FragmentTransaction = requireFragmentManager().beginTransaction()
 
-                val myToast: Toast = Toast.makeText(view!!.context, msg, Toast.LENGTH_SHORT)
+                val myToast: Toast = Toast.makeText(requireView().context, msg, Toast.LENGTH_SHORT)
                 myToast.show()
                 FragmentTransaction.replace(R.id.frame_layout, HomeFragment)
                 FragmentTransaction.addToBackStack(null)
                 FragmentTransaction.commit()
             }else{
                 msg = "Profile could not be updated"
-                val myToast: Toast = Toast.makeText(view!!.context, msg, Toast.LENGTH_SHORT)
+                val myToast: Toast = Toast.makeText(requireView().context, msg, Toast.LENGTH_SHORT)
                 myToast.show()
             }
         }

@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
-import com.hillux.citispy.User as DBUser
+import com.hillux.citispy.models.UserModel as DBUser
 import kotlinx.android.synthetic.main.fragment_app_home.raise_alert_btn
 import kotlinx.android.synthetic.main.nav_header.*
 import java.time.Instant
@@ -95,7 +95,7 @@ class HomeFragment : Fragment() {
 
         }
 
-        return view
+        return binding.root
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun raiseAlarm(location: String, user: FirebaseUser, view: View): Boolean {

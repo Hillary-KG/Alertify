@@ -11,7 +11,7 @@ import android.widget.SearchView
 class SearchUserActivity: ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tag_user_fragment)
+        setContentView(R.layout.fragment_tag_user)
 
         // Verify the action and get the query
         if (Intent.ACTION_SEARCH == intent.action) {

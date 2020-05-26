@@ -49,4 +49,5 @@
     <string name="default_notification_channel_name">Alertify</string>
     <string name="name_of_user">Name Of User</string>
     <string name="tag_user_btn">Tag</string>
+    <string name="alertify_notification_channel_id">Channel Id</string>
 </resources>

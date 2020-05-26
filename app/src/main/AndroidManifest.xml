@@ -63,7 +63,7 @@
             android:resource="@drawable/ic_raise_alert" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="#FFA1C1" /> <!-- [START fcm_default_channel] -->
+            android:resource="@color/material_on_primary_emphasis_high_type" /> <!-- [START fcm_default_channel] -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/alertify_notification_channel_id" />
