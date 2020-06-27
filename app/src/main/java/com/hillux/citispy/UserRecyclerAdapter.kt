@@ -19,13 +19,17 @@ class UserRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filt
     private var usersList = ArrayList<UserModel>()
     private var usersFullList = ArrayList<UserModel>()
 
+    //initializing the user list
+//    init {
+//        usersFullList = this.usersList
+//    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return UserViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.layout_user_list_item, parent, false)
         )
     }
-
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 //        val context = holder.itemView.context
@@ -41,6 +45,7 @@ class UserRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filt
     }
     fun submitList(userList: ArrayList<UserModel>){
         usersList = userList
+        usersFullList = this.usersList
     }
 
     class UserViewHolder constructor(
@@ -53,30 +58,32 @@ class UserRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filt
             userName.text = name
         }
     }
-    init {
-        usersFullList = usersList
-    }
+
 
     override fun getFilter(): Filter {
         return object: Filter(){
             override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString().toLowerCase(Locale.ROOT).trim()
                 val filteredList = ArrayList<UserModel>()
                 if (constraint != null) {
+//                    Log.d("search pattern 22", "List is not null")
                     if (constraint.isEmpty()){
-                        filteredList.addAll(usersFullList)
+//                        Log.d("search pattern 22", "List is empty")
+//                        filteredList.addAll(usersFullList)
                     }else{
-                        val charSearch = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                        Log.d("search pattern 22", usersFullList.size.toString())
+//                        Log.d("search pattern 22", charSearch)
+                        Log.d("full list length--->", usersFullList.size.toString())
                         for (item: UserModel in usersFullList){
 //                            Log.d("search pattern 333", charSearch)
-                            if (item.first_name.toLowerCase(Locale.ROOT).contains(charSearch)) {
-                                Log.d("search pattern 333", item.first_name)
+                            if (item.first_name.toLowerCase(Locale.ROOT).contains(charSearch) ||
+                                item.last_name.toLowerCase(Locale.ROOT).contains(charSearch)) {
+                                Log.d("Contains string", item.first_name)
                                 filteredList.add(item)
                             }
                         }
                     }
                 }
-                Log.d("collection", filteredList.size.toString())
+                Log.d("filtered list size", filteredList.size.toString())
                 val results:FilterResults = FilterResults()
                 results.values = filteredList
                 return results
@@ -92,6 +99,4 @@ class UserRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filt
             }
         }
     }
-
-
 }

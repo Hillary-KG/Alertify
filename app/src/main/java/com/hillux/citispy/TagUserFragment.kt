@@ -41,6 +41,7 @@ class TagUserFragment : Fragment() {
         recyclerView.apply {
 //            hasFixedSize()
             layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
             val topSpacingItemDecoration = TopSpacingItemDecoration(20)
             addItemDecoration(topSpacingItemDecoration)
             usersAdapter = UserRecyclerAdapter()
