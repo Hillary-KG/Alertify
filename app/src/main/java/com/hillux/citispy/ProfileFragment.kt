@@ -29,8 +29,8 @@ import java.util.concurrent.FutureTask
  * A simple [Fragment] subclass.
  */
 class ProfileFragment : Fragment() {
-    public lateinit var auth: FirebaseAuth
-    public  lateinit var database: FirebaseDatabase
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

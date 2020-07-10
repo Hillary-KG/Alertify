@@ -1,37 +1,30 @@
 package com.hillux.citispy
 
+//import kotlinx.android.synthetic.main.activity_login_register.inputEmail
+
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
-import com.google.firebase.database.*
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.InstanceIdResult
 import com.hillux.citispy.models.UserModel
-import java.util.concurrent.TimeUnit
-import kotlinx.android.synthetic.main.activity_login_register.buttonResend
-import kotlinx.android.synthetic.main.activity_login_register.buttonStartVerification
-import kotlinx.android.synthetic.main.activity_login_register.buttonVerifyPhone
-import kotlinx.android.synthetic.main.activity_login_register.progressBar
-//import kotlinx.android.synthetic.main.activity_login_register.inputEmail
-import kotlinx.android.synthetic.main.activity_login_register.inputFirstName
-import kotlinx.android.synthetic.main.activity_login_register.inputLastName
-import kotlinx.android.synthetic.main.activity_login_register.inputPhoneNumber
-import kotlinx.android.synthetic.main.activity_login_register.fieldVerificationCode
-import kotlinx.android.synthetic.main.activity_login_register.authButtons
-import kotlinx.android.synthetic.main.activity_login_register.phoneAuthFields
-import kotlinx.android.synthetic.main.nav_header.*
+import kotlinx.android.synthetic.main.activity_login_register.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 //data class User(
@@ -62,6 +55,7 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private var verificationInProgress = false
+    private lateinit var fcmToken: String
 
 
 
@@ -92,7 +86,24 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
         database = FirebaseDatabase.getInstance()
         // [END initialize_auth]
 
+        //get fcm token
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w(TAG, "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
 
+                // Get new Instance ID token
+                val token = task.result?.token
+                if (token != null) {
+                    fcmToken = token
+                }
+                // Log and toast
+//                val msg = getString(R.string.msg_token_fmt, token)
+//                Log.d(TAG, msg)
+//                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            })
         // Initialize phone auth callbacks
         // [START phone_auth_callbacks]
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -201,13 +212,13 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
     }
 
 
-    private fun saveUser(user: FirebaseUser?){
+    private fun saveUser(user: FirebaseUser?, token: String){
 //        val myUser = User(user!!.uid)
         val usersRef = database.getReference("users")
         val userTopic:String = UUID.randomUUID().toString().substring(0, 10)
 
         var userData = UserModel(inputFirstName!!.text.toString(), inputLastName!!.text.toString(),
-                            inputPhoneNumber!!.text.toString(), userTopic)
+                            inputPhoneNumber!!.text.toString(), userTopic, token.toString())
 
 //        var userDetails: Map<String, String> = mapOf(
 //            "first_name" to inputFirstName!!.text.toString(),
@@ -267,6 +278,7 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
                     val user = task.result?.user
                     val myToast: Toast = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT)
                     myToast.show()
+//                    var token: FirebaseInstanceId = FirebaseInstanceId.getInstance()
 //                    val snackBar: Snackbar = Snackbar.make(findViewById(R.id.parent), message, Snackbar.LENGTH_LONG)
 //                    snackBar.setAction("Dismiss", View.OnClickListener {
 //
@@ -276,7 +288,7 @@ class LoginRegisterActivity: AppCompatActivity(), View.OnClickListener {
 //                    val intent = Intent(this@LoginRegisterActivity, MainActivity::class.java)
 //                    startActivity(intent)
 //                    finish()
-                    saveUser(user)
+                    saveUser(user, fcmToken)
                     updateUI(STATE_SIGNIN_SUCCESS, user)
                     // [END_EXCLUDE]
                 } else {

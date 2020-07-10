@@ -69,8 +69,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun setupChannels(notificationManager: NotificationManager?) {
-        val adminChannelName = "New notification"
-        val adminChannelDescription = "Device to devie notification"
+        val adminChannelName = "Alertify"
+        val adminChannelDescription = "Alertify Notification"
 
         val adminChannel: NotificationChannel
         adminChannel = NotificationChannel(ADMIN_CHANNEL_ID, adminChannelName, NotificationManager.IMPORTANCE_HIGH)

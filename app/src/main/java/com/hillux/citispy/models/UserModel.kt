@@ -8,5 +8,6 @@ data class UserModel(
     var last_name:String = "",
     var phone_number:String = "",
     var userTopic:String = "",
+    var userToken: String = "",
     var taggedUsers: List<String> = listOf()
 )
