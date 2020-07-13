@@ -50,4 +50,11 @@
     <string name="name_of_user">Name Of User</string>
     <string name="tag_user_btn">Tag</string>
     <string name="alertify_notification_channel_id">Channel Id</string>
+    <string name="tag_contacts_string">Tag Contacts</string>
+    <string name="select_alert_type">Select Alert Type</string>
+    <string name="fire_alert_string">Fire</string>
+    <string name="accident_string">Accident</string>
+    <string name="health_emergency">Health Emergency</string>
+    <string name="other_alert">Other</string>
+    <string name="crime_alert">Crime</string>
 </resources>

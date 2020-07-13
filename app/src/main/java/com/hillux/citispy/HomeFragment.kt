@@ -63,7 +63,15 @@ class HomeFragment : Fragment() {
 
     var location: Location? = null
     private lateinit var fusedLoationClient: FusedLocationProviderClient
-    private lateinit var raise_alert_btn:Button
+    private lateinit var raiseAlertBtn:Button
+
+    private lateinit var accidentAlert: CheckBox
+    private lateinit var crimeAlert: CheckBox
+    private lateinit var healthAlert: CheckBox
+    private lateinit var otherAlert: CheckBox
+    private lateinit var fireAlert: CheckBox
+
+    private lateinit var alertType: String
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -75,6 +83,12 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
 //        val view = inflater.inflate(R.layout.fragment_app_home, container, false)
         val binding = DataBindingUtil.inflate<FragmentAppHomeBinding>(inflater, R.layout.fragment_app_home, container, false)
+        accidentAlert = binding.accidentAlert
+        crimeAlert = binding.crimeAlert
+        healthAlert = binding.healthAlert
+        fireAlert = binding.fireAlert
+        otherAlert = binding.otherAlert
+
         auth = FirebaseAuth.getInstance()
         user = auth!!.currentUser
         database = FirebaseDatabase.getInstance().reference
@@ -82,9 +96,9 @@ class HomeFragment : Fragment() {
 //        val mapFragment = supportFragmentManager.
         fusedLoationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 //        locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        raise_alert_btn = binding.raiseAlertBtn
+        raiseAlertBtn = binding.raiseAlertBtn
 //            .findViewById(R.id.raise_alert_btn)
-        raise_alert_btn.setOnClickListener { view->
+        raiseAlertBtn.setOnClickListener { view->
 //            Log.d("Location button clicked", "Locccc")
 
             try {
@@ -105,9 +119,9 @@ class HomeFragment : Fragment() {
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.of("Africa/Nairobi"))
             .format(Instant.now())
-        fusedLoationClient.lastLocation.addOnSuccessListener {
-            Log.d("Location is here", location.toString())
-        }
+//        fusedLoationClient.lastLocation.addOnSuccessListener {
+//            Log.d("Location is here", location.toString())
+//        }
 
         val userRef = database.child("users").child(user!!.uid)
         Log.d("user details one", user!!.uid)
@@ -115,7 +129,35 @@ class HomeFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()){
                     alertRaiser = dataSnapshot.getValue(DBUser::class.java)
-                    alert = Alert(loc, time.toString(), alertRaiser!!.taggedUsers, alertRaiser)
+                    when {
+                        accidentAlert.isChecked -> {
+                            alertType = accidentAlert.text.toString()
+                        }
+                        crimeAlert.isChecked -> {
+                            alertType = crimeAlert.text.toString()
+                        }
+                        healthAlert.isChecked -> {
+                            alertType = healthAlert.text.toString()
+                        }
+                        fireAlert.isChecked -> {
+                            alertType = fireAlert.text.toString()
+                        }
+                        otherAlert.isChecked -> {
+                            alertType = otherAlert.text.toString()
+                        }
+                    }
+
+                    context?.let {
+                        LocationHelper().startListeningUserLocation(it, object : LocationHelper.MyLocationListener {
+                            override fun onLocationChanged(location: Location) {
+                                // Here you got user location :)
+                                var loc = location
+                                Log.d("Location","" + location.latitude + "," + location.longitude)
+                            }
+                        })
+                    }
+
+                    alert = Alert(loc, time.toString(), alertRaiser!!.taggedUsers, alertRaiser, alertType)
 
                     if(view is CheckBox){
                         val checked: Boolean = view.isChecked
@@ -229,5 +271,7 @@ data class Alert(
     var time:String = "",
     var taggedUsers: List<String> = listOf(),
     var user: DBUser?,
+    var type:String = "",
     var status:String = "pending"
+
 )
