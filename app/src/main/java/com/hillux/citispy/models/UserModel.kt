@@ -9,5 +9,5 @@ data class UserModel(
     var phone_number:String = "",
     var userTopic:String = "",
     var userToken: String = "",
-    var taggedUsers: List<String> = listOf()
+    var taggedUsers: ArrayList<String> = ArrayList()
 )

@@ -1,5 +1,6 @@
 package com.hillux.citispy
 
+import android.Manifest
 import android.content.Context
 import android.location.Location
 import android.location.LocationListener
@@ -32,8 +33,10 @@ import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.pm.PackageManager
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import org.json.JSONObject
 import com.android.volley.Response
@@ -119,10 +122,27 @@ class HomeFragment : Fragment() {
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.of("Africa/Nairobi"))
             .format(Instant.now())
-//        fusedLoationClient.lastLocation.addOnSuccessListener {
-//            Log.d("Location is here", location.toString())
-//        }
-
+        if (ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLoationClient.lastLocation.addOnSuccessListener {
+            Log.d("Location is here", location.toString())
+        }
+//        val time = "2020-07-14 15:04:50"
         val userRef = database.child("users").child(user!!.uid)
         Log.d("user details one", user!!.uid)
         val userListener = object : ValueEventListener{
@@ -144,6 +164,8 @@ class HomeFragment : Fragment() {
                         }
                         otherAlert.isChecked -> {
                             alertType = otherAlert.text.toString()
+                        }else ->{
+                            alertType = "Other"
                         }
                     }
 
@@ -216,20 +238,21 @@ class HomeFragment : Fragment() {
     fun tagUsers(user: DBUser, location: String): Boolean{
         val notification = JSONObject()
         val notificationBody = JSONObject()
+        val topic = "/topics/"+ user.userTopic
 
         var msg: String = "${user.last_name} ${user.last_name} raised an emergency alert " +
                 "that needs your urgent attention. Their location is: $location. " +
                 "Kindly respond asap to save a life."
         try {
-            notificationBody.put("title", "Firebase Notification")
+            notificationBody.put("title", "Alert Notification!")
             notificationBody.put("message", msg)
-            notification.put("to", alertRaiser!!.userTopic)
+            notification.put("to", topic)
             notification.put("data", notificationBody)
             Log.e("TAG", "try")
         } catch (e: JSONException) {
             Log.e("TAG", "onCreate: " + e.message)
         }
-
+        sendNotification(notification)
         return true
     }
 

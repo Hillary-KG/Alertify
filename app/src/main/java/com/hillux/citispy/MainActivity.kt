@@ -107,14 +107,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             finish()
         }
         if(user != null){
-            var usersRef = database.getReference("users").child(user!!.uid)
+            val usersRef = database.getReference("users").child(user!!.uid)
 //            Log.d("user details one", user!!.uid)
             val userListener = object : ValueEventListener{
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()){
                         val u = dataSnapshot.getValue(DBUser::class.java)
                         u_identity!!.text = u!!.phone_number.toString()
-                        u_name!!.text = u!!.first_name.toString() + " " + u!!.last_name.toString()
+                        u_name!!.text = u!!.first_name + " " + u!!.last_name
                     }
                 }
 

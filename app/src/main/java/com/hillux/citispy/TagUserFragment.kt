@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.hillux.citispy.R.menu.options_menu
 import com.hillux.citispy.models.UserModel
 import kotlinx.android.synthetic.main.fragment_tag_user.*
@@ -108,10 +109,21 @@ class TagUserFragment : Fragment(), UsersRecyclerViewAdapter.OnItemClickListener
     override fun onItemClick(position: Int) {
 //        val successText = "Success"
         val clickeduser = usersList[position]
+        val user_topic: String = clickeduser.userTopic
+        FirebaseMessaging.getInstance().subscribeToTopic(user_topic)
+            .addOnCompleteListener { task ->
+                var msg = "User tagged successfully"
+                if (!task.isSuccessful) {
+                    msg = "User tagging failed"
+                }
+                Log.d(TAG, msg)
+                Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
 
-        val duration = Toast.LENGTH_SHORT
-        val toast = Toast.makeText(this.requireContext(), clickeduser.userToken, duration)
-        toast.show()
+
+//        val duration = Toast.LENGTH_SHORT
+//        val toast = Toast.makeText(this.requireContext(), clickeduser.userToken, duration)
+//        toast.show()
     }
 
     private fun checkGooglePlayServices(): Boolean {
