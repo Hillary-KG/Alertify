@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
@@ -49,8 +51,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             resources,
             R.drawable.ic_raise_alert
         )
+        val vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
 
-        val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationSoundUri = Uri.parse("android.resource://"+this.packageName +"/"+R.raw.sirena)
         val notificationBuilder = NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_raise_alert)
             .setLargeIcon(largeIcon)
@@ -58,6 +61,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(p0?.data?.get("message"))
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
+            .setVibrate(vibrationPattern)
             .setContentIntent(pendingIntent)
 
         //Set notification color to match your app color template
@@ -69,15 +73,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun setupChannels(notificationManager: NotificationManager?) {
-        val adminChannelName = "Alertify"
-        val adminChannelDescription = "Alertify Notification"
-
+        val adminChannelName = "Emergency Alert"
+        val vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
+        val adminChannelDescription = "Emergency Alert!"
+        val notificationSoundUri = Uri.parse("android.resource://"+this.packageName +"/"+R.raw.sirena)
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build();
         val adminChannel: NotificationChannel
         adminChannel = NotificationChannel(ADMIN_CHANNEL_ID, adminChannelName, NotificationManager.IMPORTANCE_HIGH)
         adminChannel.description = adminChannelDescription
         adminChannel.enableLights(true)
         adminChannel.lightColor = Color.RED
         adminChannel.enableVibration(true)
+        adminChannel.vibrationPattern = vibrationPattern
+        adminChannel.setSound(notificationSoundUri, audioAttributes)
         notificationManager?.createNotificationChannel(adminChannel)
     }
 }

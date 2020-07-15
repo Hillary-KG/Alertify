@@ -30,7 +30,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.ArrayList
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
@@ -45,11 +44,24 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.hillux.citispy.databinding.FragmentAppHomeBinding
 import org.json.JSONException
+import kotlin.collections.ArrayList
+import com.hillux.citispy.utils.PermissionUtils
+
+
+import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 
 /**
  * A simple [Fragment] subclass.
  */
 class HomeFragment : Fragment() {
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 999
+    }
     private val FCM_API = "https://fcm.googleapis.com/fcm/send"
     private val serverKey =
         "key=" + "AAAAkpRwkEI:APA91bEzAfE-eijC8K2Du6s3NmdW4BFOfncj9jsdO4Nyb4y3PD311Qqcuf3v" +
@@ -64,7 +76,7 @@ class HomeFragment : Fragment() {
     private var alertRaiser: DBUser? = null
     private lateinit var database: DatabaseReference
 
-    var location: Location? = null
+//    lateinit var loc: Location
     private lateinit var fusedLoationClient: FusedLocationProviderClient
     private lateinit var raiseAlertBtn:Button
 
@@ -75,6 +87,8 @@ class HomeFragment : Fragment() {
     private lateinit var fireAlert: CheckBox
 
     private lateinit var alertType: String
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -105,7 +119,25 @@ class HomeFragment : Fragment() {
 //            Log.d("Location button clicked", "Locccc")
 
             try {
-                user?.let { raiseAlarm(location.toString(), it, binding.checkboxTagContacts) }
+               val loc: ArrayList<Double> = ArrayList()
+                fusedLoationClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+                fusedLoationClient.lastLocation.addOnSuccessListener {
+                    val locArray = listOf<Double>(it.latitude, it.longitude)
+                    Log.d("Location","" + it.latitude + "," + it.longitude)
+                    user?.let { raiseAlarm(locArray, it, binding.checkboxTagContacts) }
+                }
+//                Log.d("Location button clicked", .toString())
+
+//                    context?.let {
+//                        LocationHelper().startListeningUserLocation(it, object : LocationHelper.MyLocationListener {
+//                            override fun onLocationChanged(location: Location) {
+//                                // Here you got user location :)
+//                                loc.addAll(listOf(location.latitude, location.longitude))
+//                                Log.d("Location","" + location.latitude + "," + location.longitude)
+//                            }
+//                        })
+//                    }
+
             }catch(ex: SecurityException) {
                 Log.d("myTag", "Security Exception, no location available")
             }
@@ -114,14 +146,12 @@ class HomeFragment : Fragment() {
 
         return binding.root
     }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun raiseAlarm(location: String, user: FirebaseUser, view: View): Boolean {
-        var alert: Alert? = null
-        val loc = location
-        val time = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss")
-            .withZone(ZoneId.of("Africa/Nairobi"))
-            .format(Instant.now())
+
+    private fun setUpLocationListener() {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+        // for getting the current location update after every 2 seconds with high accuracy
+        val locationRequest = LocationRequest().setInterval(2000).setFastestInterval(2000)
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         if (ActivityCompat.checkSelfPermission(
                 this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -137,11 +167,94 @@ class HomeFragment : Fragment() {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return
+//            return
         }
-        fusedLoationClient.lastLocation.addOnSuccessListener {
-            Log.d("Location is here", location.toString())
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    super.onLocationResult(locationResult)
+                    for (location in locationResult.locations) {
+//                        latTextView.text = location.latitude.toString()
+//                        lngTextView.text = location.longitude.toString()
+
+                    }
+                    // Few more things we can do here:
+                    // For example: Update the location of user on server
+                }
+            },
+            Looper.myLooper()
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    when {
+                        PermissionUtils.isLocationEnabled(this.requireContext()) -> {
+                            setUpLocationListener()
+                        }
+                        else -> {
+                            PermissionUtils.showGPSNotEnabledDialog(this.requireContext())
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        this.requireContext(),
+                        getString(R.string.location_permission_not_granted),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        when {
+            PermissionUtils.isAccessFineLocationGranted(this.requireContext()) -> {
+                when {
+                    PermissionUtils.isLocationEnabled(this.requireContext()) -> {
+                        setUpLocationListener()
+                    }
+                    else -> {
+                        PermissionUtils.showGPSNotEnabledDialog(this.requireContext())
+                    }
+                }
+            }
+            else -> {
+                PermissionUtils.requestAccessFineLocationPermission(
+                    this.requireActivity() as AppCompatActivity,
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun raiseAlarm(location: List<Double>, user: FirebaseUser, view: View): Boolean {
+        var alert: Alert? = null
+        val loc = location
+        Log.d("Locationnnananana", loc.toString())
+        val time = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .withZone(ZoneId.of("Africa/Nairobi"))
+            .format(Instant.now())
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+
 //        val time = "2020-07-14 15:04:50"
         val userRef = database.child("users").child(user!!.uid)
         Log.d("user details one", user!!.uid)
@@ -169,15 +282,7 @@ class HomeFragment : Fragment() {
                         }
                     }
 
-                    context?.let {
-                        LocationHelper().startListeningUserLocation(it, object : LocationHelper.MyLocationListener {
-                            override fun onLocationChanged(location: Location) {
-                                // Here you got user location :)
-                                var loc = location
-                                Log.d("Location","" + location.latitude + "," + location.longitude)
-                            }
-                        })
-                    }
+
 
                     alert = Alert(loc, time.toString(), alertRaiser!!.taggedUsers, alertRaiser, alertType)
 
@@ -186,7 +291,7 @@ class HomeFragment : Fragment() {
                         when(view.id){
                             R.id.checkboxTagContacts ->{
                                 if (checked){
-                                    tagUsers(alertRaiser!!, location)
+                                    tagUsers(alertRaiser!!, loc.toString())
                                 }
                             }
                         }
@@ -239,6 +344,7 @@ class HomeFragment : Fragment() {
         val notification = JSONObject()
         val notificationBody = JSONObject()
         val topic = "/topics/"+ user.userTopic
+        Log.d("user Topic", topic)
 
         var msg: String = "${user.last_name} ${user.last_name} raised an emergency alert " +
                 "that needs your urgent attention. Their location is: $location. " +
@@ -290,7 +396,7 @@ class HomeFragment : Fragment() {
 }
 
 data class Alert(
-    var location:String = "",
+    var location: List<Double> = listOf<Double>(),
     var time:String = "",
     var taggedUsers: List<String> = listOf(),
     var user: DBUser?,

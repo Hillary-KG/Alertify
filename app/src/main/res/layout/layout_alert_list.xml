@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="5dp"
+    app:cardPreventCornerOverlap="false"
+    android:id="@+id/card_view"
+    android:backgroundTint="#935463"
+    android:layout_marginHorizontal="3dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/background"
+        app:layout_constraintTop_toBottomOf="parent"
+        android:padding="1dp"
+        android:layout_margin="3dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/alert_type"
+            android:textSize="19sp"
+            android:textColor="#ffff"
+            android:textStyle="bold|normal"
+            android:layout_alignParentStart="true"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/alert_tme"
+            
+            android:textSize="19sp"
+            android:textColor="#ffff"
+            android:textStyle="bold|normal"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/alert_type"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/alert_location"
+            android:text=""
+            android:textSize="19sp"
+            android:textColor="#ffff"
+            android:textStyle="bold|normal"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/alert_tme"/>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

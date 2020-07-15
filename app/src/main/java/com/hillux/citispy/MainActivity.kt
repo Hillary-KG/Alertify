@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //    lateinit var alertFragment: AlertFragment
     lateinit var tagUserFragment: TagUserFragment
     lateinit var profileFragment: ProfileFragment
+    lateinit var alertListingFragment: AlertListingFragment
 
 //    lateinit var usersRef
 
@@ -195,6 +196,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.frame_layout, tagUserFragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit()
+            }
+            R.id.action_alerts -> {
+                alertListingFragment = AlertListingFragment() //fragment code
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.frame_layout, alertListingFragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit()
             }
