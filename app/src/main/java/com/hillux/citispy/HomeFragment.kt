@@ -2,9 +2,6 @@ package com.hillux.citispy
 
 import android.Manifest
 import android.content.Context
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +30,9 @@ import java.time.format.DateTimeFormatter
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
+import android.location.*
+import android.location.Location
+import android.location.LocationListener
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -54,6 +54,8 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * A simple [Fragment] subclass.
@@ -281,10 +283,22 @@ class HomeFragment : Fragment() {
                             alertType = "Other"
                         }
                     }
+                    Log.d("LOCCCC", loc.toString())
+//                    val myLocation = Geocoder(context, Locale.getDefault())
+//                    val myList: List<Address> =
+//                        myLocation.getFromLocation(loc[0], loc[1], 1)
+//                    val address: Address = myList[0] as Address
+//                    var addressStr = ""
+//                    addressStr += address.getAddressLine(0).toString() + ", "
+//                    addressStr += address.getAddressLine(1).toString() + ", "
+//                    addressStr += address.getAddressLine(2)
+                    val lat = loc[0].toDouble()
+                    val lng = loc[1].toDouble()
 
+                    val address = getAddress(lat, lng)
+                    Log.d("Adderere", address)
 
-
-                    alert = Alert(loc, time.toString(), alertRaiser!!.taggedUsers, alertRaiser, alertType)
+                    alert = Alert(address, time.toString(), alertRaiser!!.taggedUsers, alertRaiser, alertType)
 
                     if(view is CheckBox){
                         val checked: Boolean = view.isChecked
@@ -384,6 +398,12 @@ class HomeFragment : Fragment() {
         requestQueue.add(jsonObjectRequest)
     }
 
+    private fun getAddress(lat: Double, lng: Double): String {
+        val geocoder = Geocoder(this.context)
+        val list = geocoder.getFromLocation(lat, lng, 1)
+        return list[0].getAddressLine(0)
+    }
+
 //    private var LocationListener: LocationListener = object : LocationListener {
 //        override fun onLocationChanged(location: Location) {
 //            thetext.text = ("" + location.longitude + ":" + location.latitude)
@@ -396,7 +416,7 @@ class HomeFragment : Fragment() {
 }
 
 data class Alert(
-    var location: List<Double> = listOf<Double>(),
+    var location: String = "",
     var time:String = "",
     var taggedUsers: List<String> = listOf(),
     var user: DBUser?,

@@ -1,15 +1,18 @@
 package com.hillux.citispy
 
 import android.content.Context
-import android.util.Log
+import android.location.Geocoder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.hillux.citispy.models.AlertModel
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class AlertRecyclerAdapter(
     private var alertList: ArrayList<AlertModel>,
@@ -76,8 +79,21 @@ class AlertRecyclerAdapter(
                 } else {
                     val resultList = ArrayList<AlertModel>()
                     for (row in alertList) {
+                        val loc: String = ""
+
+//                        val myLocation = Geocoder(yourContext, Locale.getDefault())
+//                        val myList: List<Address> =
+//                            myLocation.getFromLocation(latitude.toDouble(), longitude.toDouble(), 1)
+//                        val address: Address = myList[0] as Address
+//                        var addressStr = ""
+//                        addressStr += address.getAddressLine(0).toString() + ", "
+//                        addressStr += address.getAddressLine(1).toString() + ", "
+//                        addressStr += address.getAddressLine(2)
+
+
+
                         if (row.type.toLowerCase(Locale.ROOT)
-                                .contains(charSearch.toLowerCase(Locale.ROOT)) || row.location.toLowerCase(Locale.ROOT)
+                                .contains(charSearch.toLowerCase(Locale.ROOT)) || row.location.toString().toLowerCase(Locale.ROOT)
                                 .contains(charSearch.toLowerCase(Locale.ROOT))
                         ) {
                             resultList.add(row)
