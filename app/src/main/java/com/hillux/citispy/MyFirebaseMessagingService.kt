@@ -51,7 +51,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             resources,
             R.drawable.ic_raise_alert
         )
-        val vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
+        val vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000, 1000)
 
         val notificationSoundUri = Uri.parse("android.resource://"+this.packageName +"/"+R.raw.sirena)
         val notificationBuilder = NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)
